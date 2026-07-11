@@ -40,7 +40,7 @@ fn build_boot_img(elf_image: &PathBuf, img_path: &PathBuf, firmware_mode: &Firmw
     }
 }
 
-fn start_qemu(img_path: &PathBuf, firmware_mode: &FirmwareMode) {
+fn start_qemu(img_path: &PathBuf, firmware_mode: &FirmwareMode) -> i32 {
     let mut cmd = Command::new("qemu-system-x86_64");
     // print serial output to the shell
     cmd.arg("-serial").arg("mon:stdio");
@@ -83,11 +83,12 @@ fn start_qemu(img_path: &PathBuf, firmware_mode: &FirmwareMode) {
 
     let mut child = cmd.spawn().expect("failed to start qemu-system-x86_64");
     let status = child.wait().expect("failed to wait on qemu");
+    println!("QEMU exited with status: {}", status);
     match status.code().unwrap_or(1) {
         0x10 => 0, // success
         0x11 => 1, // failure
         _ => 2,    // unknown fault
-    };
+    }
 }
 
 
@@ -116,5 +117,6 @@ fn main() {
 
     build_boot_img(&elf_image, &img_path, &firmware_mode);
 
-    start_qemu(&img_path, &firmware_mode);
+    let exit_code = start_qemu(&img_path, &firmware_mode);
+    exit(exit_code);
 }
