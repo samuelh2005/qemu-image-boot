@@ -84,10 +84,14 @@ fn start_qemu(img_path: &PathBuf, firmware_mode: &FirmwareMode) -> i32 {
     let mut child = cmd.spawn().expect("failed to start qemu-system-x86_64");
     let status = child.wait().expect("failed to wait on qemu");
     println!("QEMU exited with status: {}", status);
+
+    const SUCCESS: i32 = (0x10 << 1) | 1;
+    const FAILURE: i32 = (0x11 << 1) | 1;
+
     match status.code().unwrap_or(1) {
-        0x10 => 0, // success
-        0x11 => 1, // failure
-        _ => 2,    // unknown fault
+        SUCCESS => 0, // success
+        FAILURE => 1, // failure
+        _ => 2,       // unknown fault
     }
 }
 
