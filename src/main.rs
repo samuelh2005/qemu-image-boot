@@ -42,6 +42,7 @@ fn build_boot_img(elf_image: &PathBuf, img_path: &PathBuf, firmware_mode: &Firmw
 
 fn start_qemu(img_path: &PathBuf, firmware_mode: &FirmwareMode) -> i32 {
     let mut cmd = Command::new("qemu-system-x86_64");
+    cmd.arg("--machine").arg("q35");
     // print serial output to the shell
     cmd.arg("-serial").arg("mon:stdio");
     // enable the guest to exit qemu
