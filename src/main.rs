@@ -87,6 +87,7 @@ fn start_qemu(img_path: &PathBuf, firmware_mode: &FirmwareMode) -> i32 {
     const FAILURE: i32 = (0x11 << 1) | 1;
 
     match status.code().unwrap_or(1) {
+        0 => 0, // normal exit
         SUCCESS => 0, // success
         FAILURE => 1, // failure
         _ => 2,       // unknown fault
